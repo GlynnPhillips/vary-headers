@@ -1,0 +1,16 @@
+{
+  "name": "ft-headers",
+  "version": "1.0.0",
+  "description": "",
+  "main": "background.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jq": "^1.7.2",
+    "jq-cli-wrapper": "^0.4.0",
+    "webpack": "^2.3.3"
+  }
+}

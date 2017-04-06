@@ -1,0 +1,21 @@
+{
+  "name": "FT Headers",
+  "version": "1.2",
+  "description": "FT Headers",
+  "permissions": [
+    "activeTab",
+    "webRequest",
+    "webRequestBlocking",
+    "*://*.ft.com/",
+    "*://*.herokuapp.com/",
+    "storage"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "browser_action": {
+    "default_popup": "popup.html"
+  }
+}
