@@ -1,5 +1,6 @@
 {
   "name": "FT Headers",
+  "manifest_version": 2,
   "version": "1.2",
   "description": "FT Headers",
   "permissions": [

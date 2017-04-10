@@ -22,8 +22,6 @@ function(details) {
 			details.requestHeaders.push({name: name, value: value});
 		});	
 
-		details.requestHeaders.push({name: 'lalala', value: 'value'});
-
 		return {requestHeaders: details.requestHeaders};
 	}
 },
