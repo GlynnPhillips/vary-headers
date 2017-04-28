@@ -113,3 +113,34 @@ input {
 	width: 100%;
 	height: 150px;
 }
+
+.delete-profile {
+	float: right;
+	margin: 10px 0;
+	color: #F23030;
+}
+
+.undo-button {
+    float: right;
+	margin: 10px 0;
+	color: #359612;
+	width:0;
+    height:0;
+	visibility: hidden;
+}
+
+.undo-button--visible {
+	visibility: visible;
+	width:auto;
+    height:auto;
+    overflow:auto;
+	animation: cssAnimation 0s ease-in 6s forwards;
+}
+
+@keyframes cssAnimation {
+    to {
+        width:0;
+        height:0;
+		visibility: hidden;
+    }
+}

@@ -1,9 +1,9 @@
 chrome.webRequest.onBeforeSendHeaders.addListener(
 function(details) {
-  	
+	
 	const host = new URL(details.url).host;	
-  	if (host.match(/ft\.com$/) || host.match(/ft\-next\-(.*)\.herokuapp\.com$/)) {
-	  	const profiles = JSON.parse(localStorage.getItem('profiles'));
+	if (host.match(/ft\.com(:[0-9]{4})?$/) || host.match(/ft\-next\-(.*)\.herokuapp\.com$/)) {	  	
+		const profiles = JSON.parse(localStorage.getItem('profiles'));
 	  	const activeProfile = parseInt(localStorage.getItem('activeProfile'));
 		
 		const profile = profiles.find(profile => {
