@@ -1,33 +1,34 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>FT Headers</title>
-	<link rel="stylesheet" href="reset.css">
-	<link rel="stylesheet" href="styles.css">
-    <script src="public/bundle.js"></script>
-  </head>
-  <body>
-		<header class="heading" data-banner>
-			<h1 class="heading__title">FT Headers</h1>
-			<button class="heading__button" data-add-profile>New Profile</button>
-			<button data-import-profile class="heading__button">Import ModHeaders Profile</button>
-		</header>
-		
-		<div class="wrapper">
-			<div data-profile-picker data-menu class="profile-picker"></div>	
-			<section class="profile profile--reveal" data-headers-panel>
-				<label class="profile__label">Profile Name</label>
-				<input data-profile-name class="profile__name" placeholder="Profile Name" />
-				<div data-headers class="profile__headers"></div>
-				<button data-add-header class="profile__button">New request header</button>
-				<button class="delete-profile" data-profile-delete>Delete Profile</button>
-		   	</section>
-
-
-		   	<section class="import" data-import-panel>
-		   		<textarea data-import-data class="import__data"></textarea>
-		   		<button data-import-save>Import profile</button>
-		   	</section>	
-	   	</div>
-  </body>
+<head>
+	<title>FT Headers</title>
+	<link href="styles.css" rel="stylesheet">
+	<script src="public/bundle.js"></script>
+</head>
+<body>
+	<header class="heading">
+		<img alt="FT" class="heading__logo" src="icons/favicon-194x194.png">
+		<h1 class="heading__title">Headers</h1>
+	</header>
+	<section class="profile-picker" data-profile-picker></section>
+	<section class="profile profile--reveal" data-profile>
+		<div class="profile__section" data-headers-panel>
+			<button class="delete-profile" data-profile-delete>Delete profile</button>
+			<label>Profile name <input data-profile-name></label>
+		</div>
+		<div class="profile__section">
+			<h3 class="profile__section-title">Headers</h3>
+			<div class="profile__headers" data-headers></div>
+			<button class="add-header" data-add-header>Add another header</button>
+		</div>
+	</section>
+	<section class="banner" data-banner>
+		<button class="banner__button" data-add-profile>Add another profile</button>
+		<button class="banner__button" data-import-profile>Import ModHeaders profile</button>
+	</section>
+	<section class="import" data-import-panel>
+		<textarea class="import__data" data-import-data></textarea>
+		<button data-import-save>Import profile</button>
+	</section>
+</body>
 </html>
