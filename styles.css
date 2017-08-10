@@ -83,6 +83,10 @@ body {
 	background-color: #000000;
 	border: 1px solid #000000;
 }
+.profile__field {
+	margin: 5px 0;
+	display: block;
+}
 .add-header {
 	cursor: pointer;
 	margin-top: 10px;
