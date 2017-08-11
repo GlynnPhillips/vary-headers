@@ -3,6 +3,10 @@
   "manifest_version": 2,
   "version": "1.2",
   "description": "FT Headers",
+  "icons": {
+		"32": "icons/favicon-32x32.png",
+		"194": "icons/favicon-194x194.png"
+	},
   "permissions": [
     "activeTab",
     "webRequest",
