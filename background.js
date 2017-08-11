@@ -1,7 +1,6 @@
 import awsSigner from './lib/aws-signer';
 
 chrome.webRequest.onBeforeRequest.addListener(function(details) {
-	debugger;
 	if (isUrlValid(details.url)) {
 		const profile = getActiveProfile();
 		if (profile.aws) {
