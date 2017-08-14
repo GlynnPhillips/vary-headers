@@ -3,7 +3,7 @@
 <head>
 	<title>FT Headers</title>
 	<link href="styles.css" rel="stylesheet">
-	<script src="public/bundle.js"></script>
+	<script src="public/popup.js"></script>
 </head>
 <body>
 	<header class="heading">
@@ -20,6 +20,18 @@
 			<h3 class="profile__section-title">Headers</h3>
 			<div class="profile__headers" data-headers></div>
 			<button class="add-header" data-add-header>Add another header</button>
+		</div>
+		<div class="profile__section">
+			<h3 class="profile__section-title">AWS</h3>
+			<p>Optionally you can specify AWS credentials to sign ES requests with.</p>
+			<div class="profile__field">
+				Region
+				<br>
+				<label><input type="radio" name="region" data-aws-eu-west-1> EU West (Ireland)</label>
+				<label><input type="radio" name="region" data-aws-us-east-1> US East (N. Virginia)</label>
+			</div>
+			<label class="profile__field">Access Key ID <input data-aws-access-key-id></label>
+			<label class="profile__field">Secret Access Key <input data-aws-secret-access-key></label>
 		</div>
 	</section>
 	<section class="banner" data-banner>

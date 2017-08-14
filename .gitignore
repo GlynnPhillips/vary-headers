@@ -2,3 +2,4 @@ node_modules/
 publish.zip
 publish/
 public/
+package-lock.json

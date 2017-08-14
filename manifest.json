@@ -13,11 +13,14 @@
     "webRequestBlocking",
     "*://*.ft.com/",
     "*://*.herokuapp.com/",
+		"*://next-elastic.ft.com/*",
+		"*://search-next-elasticsearch-[a-z1-9]+.(eu-west-1|us-east-1).es.amazonaws.com/*",
     "storage"
   ],
   "background": {
     "scripts": [
-      "background.js"
+      "public/background.js",
+			"lib/hmac-sha256.js"
     ]
   },
   "browser_action": {
