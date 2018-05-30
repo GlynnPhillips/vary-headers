@@ -9,6 +9,7 @@
 	},
   "permissions": [
     "activeTab",
+		"cookies",
     "webRequest",
     "webRequestBlocking",
     "*://*.ft.com/",
