@@ -117,3 +117,21 @@ body {
 	width: 100%;
 	height: 150px;
 }
+
+.profile__session-key-input {
+	width: 275px;
+}
+
+.profile__session-key-save {
+	cursor: pointer;
+	color: #ffffff;
+	background-color: #000000;
+	border: 1px solid #000000;
+}
+
+.profile__user-select {
+	border: 1px solid #ddd;
+	border-radius: 0px;
+	width: 100%;
+	font-size: 14px;
+}
