@@ -6,18 +6,15 @@ chrome.runtime.onMessage.addListener(
 			chrome.storage.sync.get('profiles', function(cache) {
 				const { profiles } = cache;
 
-				const headers = profiles[0].headerNames.map((name, index) => {
-					const headerValue = profiles[0].headerValues[index] || "";
+				const headers = profiles[0].headers.map(headerObject => {
 
-					return {
-						header: name,
-						value: headerValue,
+					return Object.assign({}, headerObject, {
 						operation: chrome.declarativeNetRequest.HeaderOperation.SET
-					}
-				}).filter(headerObject => {
-					return headerObject.header !== '' && headerObject.value !== ''
-				});
+					})
 
+				}).filter(headerObject => {
+					return headerObject.header !== "" && headerObject.value !== ""
+				});
 
 				chrome.declarativeNetRequest.updateDynamicRules({
 					removeRuleIds: [1] // Remove existing rules each time we update the rules

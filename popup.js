@@ -1,3 +1,22 @@
+const createHeaderUI = ({
+	name = '',
+	value = ''
+} = {}) => {
+	return `
+		<div data-header-group>
+			<label>
+				Header name
+				<input name="name" autocomplete="off" data-header-name value="${name}"/>
+			</label>
+
+			<label>
+				Header value
+				<input name="value" autocomplete="off" data-header-value value="${value}"/>
+			</label>
+		</div>
+	`;
+};
+
 document.addEventListener('DOMContentLoaded', function() {
 
 	const profileSection = document.querySelector('[data-profile]');
@@ -8,24 +27,21 @@ document.addEventListener('DOMContentLoaded', function() {
 	chrome.storage.sync.get('profiles', function(cache) {
 		const { profiles } = cache;
 
-		if (!profiles?.length) {
-			return;
-		}
-
 		/**
-		 * Populate the inputs
+		 * Build header UI
 		 */
 
-		if (profiles[0]?.headerNames?.length) {
-			profiles[0].headerNames.forEach((name, index) => {
-				profileSection.querySelectorAll('[data-header-name]')[index].value = name;
+		if (!profiles || !profiles[0]?.headers?.length) {
+			profileSection.insertAdjacentHTML('beforeend', createHeaderUI());
+		} else {
+			const existingHeaderUI = profiles[0].headers.map(headerObject => {
+				return createHeaderUI({
+					name: headerObject.header,
+					value: headerObject.value
+				});
 			});
-		}
 
-		if (profiles[0]?.headerValues?.length) {
-			profiles[0].headerValues.forEach((value, index) => {
-				profileSection.querySelectorAll('[data-header-value]')[index].value = value;
-			});
+			profileSection.insertAdjacentHTML('beforeend', existingHeaderUI.join(''));
 		}
 	});
 
@@ -38,15 +54,22 @@ document.addEventListener('DOMContentLoaded', function() {
 	profileSection.onkeyup = function() {
 		clearTimeout(timeoutId);
 		timeoutId = setTimeout(function() {
-			const headerNames = Array.from(profileSection.querySelectorAll('[data-header-name]'))
-				.map(nameElement => nameElement.value);
-			const headerValues = Array.from(profileSection.querySelectorAll('[data-header-value]'))
-				.map(valueElement => valueElement.value);
+
+			const headers = Array.from(profileSection.querySelectorAll('[data-header-group]'))
+				.map(groupElement => {
+					const nameElement = groupElement.querySelector('[data-header-name]');
+					const valueElement = groupElement.querySelector('[data-header-value]');
+
+					return {
+						header: nameElement.value,
+						value: valueElement.value
+					}
+				});
+
 
 			const profiles = [
 				{
-					headerNames,
-					headerValues
+					headers
 				}
 			];
 
