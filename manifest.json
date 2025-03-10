@@ -1,0 +1,20 @@
+{
+	"manifest_version": 3,
+	"name": "FT Headers",
+	"version": "2.0",
+	"description": "Allows you to send request headers to FT services without sending them to other websites",
+	"permissions": [
+		"activeTab",
+		"storage",
+		"declarativeNetRequest"
+	],
+	"host_permissions": [
+		"*://*.ft.com/*"
+	],
+	"background": {
+	  "service_worker": "background.js"
+	},
+	"action": {
+	  "default_popup": "popup.html"
+	}
+}
