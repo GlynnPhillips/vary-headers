@@ -79,4 +79,15 @@ document.addEventListener('DOMContentLoaded', function() {
 			chrome.runtime.sendMessage({action: "profileUpdate"});
 		}, 500);
 	};
+
+	/**
+	 * Add new header
+	 */
+
+	const addNewHeaderButton = document.querySelector('[data-add-new-header]');
+
+	addNewHeaderButton.addEventListener('click', () => {
+		profileSection.insertAdjacentHTML('beforeend', createHeaderUI());
+	});
+
 });
