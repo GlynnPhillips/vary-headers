@@ -8,9 +8,11 @@ chrome.runtime.onMessage.addListener(
 
 				const headers = profiles[0].headers.map(headerObject => {
 
-					return Object.assign({}, headerObject, {
+					return {
+						header: !headerObject.disabled ? headerObject.header : '',
+						value: !headerObject.disabled ? headerObject.value : '',
 						operation: chrome.declarativeNetRequest.HeaderOperation.SET
-					})
+					}
 
 				}).filter(headerObject => {
 					return headerObject.header !== "" && headerObject.value !== ""

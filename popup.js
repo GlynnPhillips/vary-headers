@@ -1,6 +1,7 @@
 const createHeaderUI = ({
 	name = '',
-	value = ''
+	value = '',
+	disabled = false
 } = {}) => {
 	return `
 		<div data-header-group>
@@ -13,13 +14,60 @@ const createHeaderUI = ({
 				Header value
 				<input name="value" autocomplete="off" data-header-value value="${value}"/>
 			</label>
+
+			<label>
+				Disable header
+				<input type="checkbox" ${disabled ? 'checked' : ''} data-profile-disable-header />
+			</label>
 		</div>
 	`;
 };
 
+
+const saveProfile = ({
+	rootElement
+}) => {
+	const headers = Array.from(rootElement.querySelectorAll('[data-header-group]'))
+		.map(groupElement => {
+			const nameElement = groupElement.querySelector('[data-header-name]');
+			const valueElement = groupElement.querySelector('[data-header-value]');
+			const disabledElement = groupElement.querySelector('[data-profile-disable-header]');
+
+			return {
+				header: nameElement.value,
+				value: valueElement.value,
+				disabled: disabledElement.checked
+			}
+		}).filter(headerObject => {
+			return headerObject.header !== '' && headerObject.value !== ''
+		});
+
+	const profiles = [
+		{
+			headers
+		}
+	];
+
+	chrome.storage.sync.set({ profiles });
+
+	// Notify background service worker
+	chrome.runtime.sendMessage({action: "profileUpdate"});
+}
+
+
 document.addEventListener('DOMContentLoaded', function() {
 
 	const profileSection = document.querySelector('[data-profile]');
+
+	profileSection.addEventListener('click', (event) => {
+		const clickTarget = event.target;
+		if (clickTarget.hasAttribute('data-profile-disable-header')) {
+			saveProfile({
+				rootElement: profileSection
+			});
+		}
+	})
+
 
 	/**
 	 * Load existing headers from storage
@@ -37,7 +85,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			const existingHeaderUI = profiles[0].headers.map(headerObject => {
 				return createHeaderUI({
 					name: headerObject.header,
-					value: headerObject.value
+					value: headerObject.value,
+					disabled: headerObject.disabled
 				});
 			});
 
@@ -54,30 +103,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	profileSection.onkeyup = function() {
 		clearTimeout(timeoutId);
 		timeoutId = setTimeout(function() {
-
-			const headers = Array.from(profileSection.querySelectorAll('[data-header-group]'))
-				.map(groupElement => {
-					const nameElement = groupElement.querySelector('[data-header-name]');
-					const valueElement = groupElement.querySelector('[data-header-value]');
-
-					return {
-						header: nameElement.value,
-						value: valueElement.value
-					}
-				}).filter(headerObject => {
-					return headerObject.header !== '' && headerObject.value !== ''
-				});
-
-			const profiles = [
-				{
-					headers
-				}
-			];
-
-			chrome.storage.sync.set({ profiles });
-
-			// Notify background service worker
-			chrome.runtime.sendMessage({action: "profileUpdate"});
+			saveProfile({
+				rootElement: profileSection
+			});
 		}, 500);
 	};
 
