@@ -18,22 +18,28 @@ chrome.runtime.onMessage.addListener(
 					return headerObject.header !== '' && headerObject.value !== ''
 				});
 
+
 				chrome.declarativeNetRequest.updateDynamicRules({
-					addRules: [
-						{
-							id: 1,
-							priority: 1,
-							action: {
-								type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
-								requestHeaders: headers,
-							},
-							condition: {
-								resourceTypes: allResourceTypes,
-							},
-						},
-					],
 					removeRuleIds: [1] // Remove existing rules each time we update the rules
 				});
+
+				if (headers.length) {
+					chrome.declarativeNetRequest.updateDynamicRules({
+						addRules: [
+							{
+								id: 1,
+								priority: 1,
+								action: {
+									type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+									requestHeaders: headers,
+								},
+								condition: {
+									resourceTypes: allResourceTypes,
+								},
+							},
+						]
+					});
+				}
 			});
 		}
 	}
