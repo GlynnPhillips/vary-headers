@@ -64,8 +64,9 @@ document.addEventListener('DOMContentLoaded', function() {
 						header: nameElement.value,
 						value: valueElement.value
 					}
+				}).filter(headerObject => {
+					return headerObject.header !== '' && headerObject.value !== ''
 				});
-
 
 			const profiles = [
 				{
