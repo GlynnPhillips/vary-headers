@@ -15,6 +15,8 @@ const createHeaderUI = ({
 				<input name="value" autocomplete="off" data-header-value value="${value}"/>
 			</label>
 
+			<div class="header__error" data-profile-header-error></div>
+
 			<label>
 				Disable header
 				<input type="checkbox" ${disabled ? 'checked' : ''} data-profile-disable-header />
@@ -32,6 +34,24 @@ const saveProfile = ({
 			const nameElement = groupElement.querySelector('[data-header-name]');
 			const valueElement = groupElement.querySelector('[data-header-value]');
 			const disabledElement = groupElement.querySelector('[data-profile-disable-header]');
+			const errorElement = groupElement.querySelector('[data-profile-header-error]');
+
+			/**
+			 * Clean up the error message before the next validation
+			 */
+			errorElement.innerHTML = '';
+
+			try {
+				/**
+				 * Check if values submitted are valid header characters
+				 */
+
+				new Headers([
+					[nameElement.value, valueElement.value]
+				]);
+			} catch (error) {
+				errorElement.insertAdjacentHTML('afterBegin', `<p>This header is invalid and it wont sent with requests until it is corrected: ${error}</p>`);
+			}
 
 			return {
 				header: nameElement.value,
