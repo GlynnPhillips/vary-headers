@@ -9,7 +9,8 @@
 		"declarativeNetRequest"
 	],
 	"host_permissions": [
-		"*://*.ft.com/*"
+		"*://*.ft.com/*",
+		"*://*.ftweb.tech/*"
 	],
 	"background": {
 	  "service_worker": "background.js"
