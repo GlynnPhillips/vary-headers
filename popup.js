@@ -25,10 +25,23 @@ const createHeaderUI = ({
 	`;
 };
 
+const createProfileUI = ({
+	profileName = '',
+} = {}) => {
+	return `
+		<label>
+			Profile name
+			<input name="name" autocomplete="off" data-profile-name value="${profileName}"/>
+		</label>
+	`;
+};
 
 const saveProfile = ({
 	rootElement
 }) => {
+
+	const profileNameElement = rootElement.querySelector('[data-profile-name]');
+
 	const headers = Array.from(rootElement.querySelectorAll('[data-header-group]'))
 		.map(groupElement => {
 			const nameElement = groupElement.querySelector('[data-header-name]');
@@ -64,6 +77,7 @@ const saveProfile = ({
 
 	const profiles = [
 		{
+			name: profileNameElement.value,
 			headers
 		}
 	];
@@ -96,9 +110,17 @@ document.addEventListener('DOMContentLoaded', function() {
 		const { profiles } = cache;
 
 		/**
-		 * Build header UI
+		 * Build Profile UI
 		 */
 
+		const profileName = profiles[0].name || '';
+		profileSection.insertAdjacentHTML('afterBegin', createProfileUI({
+			profileName
+		}));
+
+		/**
+		 * Build header UI
+		 */
 		if (!profiles || !profiles[0]?.headers?.length) {
 			profileSection.insertAdjacentHTML('beforeend', createHeaderUI());
 		} else {
