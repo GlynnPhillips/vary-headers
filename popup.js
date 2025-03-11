@@ -27,12 +27,15 @@ const createHeaderUI = ({
 
 const createProfileUI = ({
 	profileName = '',
+	profileId
 } = {}) => {
 	return `
 		<label>
 			Profile name
 			<input name="name" autocomplete="off" data-profile-name value="${profileName}"/>
 		</label>
+
+		<input type="hidden" name="id" data-profile-id value="${profileId}"/>
 	`;
 };
 
@@ -41,6 +44,7 @@ const saveProfile = ({
 }) => {
 
 	const profileNameElement = rootElement.querySelector('[data-profile-name]');
+	const profileIdElement = rootElement.querySelector('[data-profile-id]');
 
 	const headers = Array.from(rootElement.querySelectorAll('[data-header-group]'))
 		.map(groupElement => {
@@ -77,6 +81,7 @@ const saveProfile = ({
 
 	const profiles = [
 		{
+			id: profileIdElement.value,
 			name: profileNameElement.value,
 			headers
 		}
@@ -114,8 +119,11 @@ document.addEventListener('DOMContentLoaded', function() {
 		 */
 
 		const profileName = profiles[0].name || '';
+		const profileId = profiles[0].id || self.crypto.randomUUID();
+
 		profileSection.insertAdjacentHTML('afterBegin', createProfileUI({
-			profileName
+			profileName,
+			profileId
 		}));
 
 		/**
