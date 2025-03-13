@@ -1,3 +1,13 @@
+
+chrome.storage.onChanged.addListener((event) => {
+		chrome.storage.sync.get().then(cache => {
+			const profiles = Object.values(cache);
+
+			updateProfilePicker(profiles);
+		})
+	}
+);
+
 const createHeaderUI = ({
 	name = '',
 	value = '',
@@ -25,18 +35,26 @@ const createHeaderUI = ({
 	`;
 };
 
-const createProfileUI = ({
-	profileName = '',
-	profileId
-} = {}) => {
-	return `
-		<label>
-			Profile name
-			<input name="name" autocomplete="off" data-profile-name value="${profileName}"/>
-		</label>
 
-		<input type="hidden" name="id" data-profile-id value="${profileId}"/>
-	`;
+const updateActiveProfileMeta = ({
+	id = self.crypto.randomUUID(),
+	name = ''
+} = {}) => {
+	document.querySelector('[data-profile-id]').value = id;
+	document.querySelector('[data-profile-name]').value = name;
+};
+
+const updateProfilePicker = (profiles = []) => {
+	const picker = document.querySelector('[data-profile-picker]');
+
+	picker.innerHTML = '';
+
+	const optionsHtml = profiles.map(profile => {
+		const selected = profile.active ? 'selected' : '';
+		return `<option value="${profile.id}" ${selected}>${profile.name}</option>`;
+	}).join('');
+
+	picker.insertAdjacentHTML('afterbegin', optionsHtml)
 };
 
 const saveProfile = ({
@@ -45,6 +63,7 @@ const saveProfile = ({
 
 	const profileNameElement = rootElement.querySelector('[data-profile-name]');
 	const profileIdElement = rootElement.querySelector('[data-profile-id]');
+	const profileId = profileIdElement.value;
 
 	const headers = Array.from(rootElement.querySelectorAll('[data-header-group]'))
 		.map(groupElement => {
@@ -58,16 +77,21 @@ const saveProfile = ({
 			 */
 			errorElement.innerHTML = '';
 
-			try {
+			if (nameElement.value !== '') {
 				/**
-				 * Check if values submitted are valid header characters
+				 * Don't try and validate headers whilst the name value is still blank
 				 */
+				try {
+					/**
+					 * Check if values submitted are valid header characters
+					 */
 
-				new Headers([
-					[nameElement.value, valueElement.value]
-				]);
-			} catch (error) {
-				errorElement.insertAdjacentHTML('afterBegin', `<p>This header is invalid and it wont sent with requests until it is corrected: ${error}</p>`);
+					new Headers([
+						[nameElement.value, valueElement.value]
+					]);
+				} catch (error) {
+					errorElement.insertAdjacentHTML('afterBegin', `<p>This header is invalid and it wont sent with requests until it is corrected: ${error}</p>`);
+				}
 			}
 
 			return {
@@ -79,15 +103,19 @@ const saveProfile = ({
 			return headerObject.header !== '' && headerObject.value !== ''
 		});
 
-	const profiles = [
-		{
-			id: profileIdElement.value,
-			name: profileNameElement.value,
-			headers
-		}
-	];
+	const profile = {
+		id: profileIdElement.value,
+		name: profileNameElement.value,
+		headers
+	};
 
-	chrome.storage.sync.set({ profiles });
+	const cache = {};
+
+	cache[profileId] = profile
+
+	chrome.storage.sync.set(cache);
+
+	updateProfilePicker()
 
 	// Notify background service worker
 	chrome.runtime.sendMessage({action: "profileUpdate"});
@@ -97,6 +125,7 @@ const saveProfile = ({
 document.addEventListener('DOMContentLoaded', function() {
 
 	const profileSection = document.querySelector('[data-profile]');
+	const headersSection = profileSection.querySelector('[data-profiles-headers]');
 
 	profileSection.addEventListener('click', (event) => {
 		const clickTarget = event.target;
@@ -105,32 +134,42 @@ document.addEventListener('DOMContentLoaded', function() {
 				rootElement: profileSection
 			});
 		}
-	})
+	});
 
 
 	/**
 	 * Load existing headers from storage
 	 */
-	chrome.storage.sync.get('profiles', function(cache) {
-		const { profiles } = cache;
+
+	chrome.storage.sync.get().then(cache => {
+		const profiles = Object.values(cache);
 
 		/**
 		 * Build Profile UI
 		 */
 
-		const profileName = profiles[0].name || '';
-		const profileId = profiles[0].id || self.crypto.randomUUID();
+		if (!profiles.length) {
+			updateActiveProfileMeta({});
+			updateProfilePicker([]);
+		} else {
+			const profileName = profiles[0].name || '';
+			const profileId = profiles[0].id;
 
-		profileSection.insertAdjacentHTML('afterBegin', createProfileUI({
-			profileName,
-			profileId
-		}));
+			updateActiveProfileMeta({
+				id: profileId,
+				name: profileName
+			});
+
+			updateProfilePicker(profiles);
+		}
+
+
 
 		/**
 		 * Build header UI
 		 */
 		if (!profiles || !profiles[0]?.headers?.length) {
-			profileSection.insertAdjacentHTML('beforeend', createHeaderUI());
+			headersSection.insertAdjacentHTML('beforeend', createHeaderUI());
 		} else {
 			const existingHeaderUI = profiles[0].headers.map(headerObject => {
 				return createHeaderUI({
@@ -140,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				});
 			});
 
-			profileSection.insertAdjacentHTML('beforeend', existingHeaderUI.join(''));
+			headersSection.insertAdjacentHTML('beforeend', existingHeaderUI.join(''));
 		}
 	});
 
@@ -166,7 +205,51 @@ document.addEventListener('DOMContentLoaded', function() {
 	const addNewHeaderButton = document.querySelector('[data-add-new-header]');
 
 	addNewHeaderButton.addEventListener('click', () => {
-		profileSection.insertAdjacentHTML('beforeend', createHeaderUI());
+		headersSection.insertAdjacentHTML('beforeend', createHeaderUI());
 	});
 
+	/**
+	 * Pick active profile
+	 */
+	const profilePicker = document.querySelector('[data-profile-picker]');
+
+	profilePicker.addEventListener('change', (event) => {
+
+		const newActiveId = event.target.value;
+
+		chrome.storage.sync.get(newActiveId).then(cache => {
+			const profile = cache[newActiveId];
+
+			updateActiveProfileMeta({
+				id: profile.id,
+				name: profile.name
+			});
+
+			headersSection.innerHTML = '';
+
+			const existingHeaderUI = profile.headers.map(headerObject => {
+				return createHeaderUI({
+					name: headerObject.header,
+					value: headerObject.value,
+					disabled: headerObject.disabled
+				});
+			});
+
+			headersSection.insertAdjacentHTML('beforeend', existingHeaderUI.join(''));
+		});
+
+	});
+
+	/**
+	 * Create new profile
+	 */
+	const newProfileButton = document.querySelector('[data-profile-create]');
+
+	newProfileButton.addEventListener('click', (event) => {
+		updateActiveProfileMeta();
+
+		headersSection.innerHTML = '';
+		headersSection.insertAdjacentHTML('beforeend', createHeaderUI());
+
+	});
 });

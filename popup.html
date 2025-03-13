@@ -25,7 +25,12 @@
 <body>
 
 	<div class="profile__container" data-profile>
+		<button data-profile-create>Create new profile</button>
+		<select data-profile-picker></select>
+		<input name="name" data-profile-name value="" />
+		<input type="hidden" name="id" data-profile-id value="" />
 
+		<div data-profiles-headers></div>
 	</div>
 
 	<button data-add-new-header>Add new header</button>

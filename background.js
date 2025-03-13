@@ -3,8 +3,8 @@ const allResourceTypes = Object.values(chrome.declarativeNetRequest.ResourceType
 chrome.runtime.onMessage.addListener(
 	function(request) {
 		if (request.action === "profileUpdate") {
-			chrome.storage.sync.get('profiles', function(cache) {
-				const { profiles } = cache;
+			chrome.storage.sync.get().then(cache => {
+				const profiles = Object.values(cache);
 
 				const headers = profiles[0].headers.map(headerObject => {
 
