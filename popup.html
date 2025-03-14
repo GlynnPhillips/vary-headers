@@ -4,13 +4,38 @@
   <title>FT Headers</title>
   <style>
 	body {
-		width: 200px;
+		width: 300px;
 		padding: 10px;
+		background: #fff1e5;
+	}
+
+	.header,
+	.footer {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 10px;
+	}
+
+	h1 {
+		margin: 0;
 	}
 
 	label,
 	input {
 		width: 100%;
+	}
+
+	label {
+		font-weight: 600;
+	}
+
+	input {
+		margin-bottom: 5px;
+	}
+
+	input[type="checkbox"] {
+		display: inline;
+		width: auto;
 	}
 
 	.profile__container {
@@ -20,20 +45,49 @@
 	.header__error {
 		color: red;
 	}
+
+	button {
+		background-color: #0d7680;
+		border: 0;
+		color: #fff;
+		padding: 6px 8px;
+		border-radius: 2px;
+	}
+
+	.profile__meta {
+		margin-bottom: 8px;
+	}
+
+	.profile__header:not(:last-child) {
+		margin-bottom: 8px;
+		padding-bottom: 8px;
+		border-bottom: 1px dashed #262a33;
+	}
+
   </style>
 </head>
 <body>
 
-	<div class="profile__container" data-profile>
-		<button data-profile-create>Create new profile</button>
+	<div class="header">
+		<h1>FT Headers</h1>
 		<select data-profile-picker></select>
-		<input name="name" data-profile-name value="" />
-		<input type="hidden" name="id" data-profile-id value="" />
-
-		<div data-profiles-headers></div>
 	</div>
 
-	<button data-add-new-header>Add new header</button>
+	<div class="profile__container" data-profile>
+		<div class="profile__meta">
+			<label>Profile name
+				<input name="name" data-profile-name value="" />
+			</label>
+			<input type="hidden" name="id" data-profile-id value="" />
+		</div>
+
+		<div class="profile__headers" data-profiles-headers></div>
+	</div>
+
+	<div class="footer">
+		<button data-add-new-header>Add new header</button>
+		<button data-profile-create>Create new profile</button>
+		</div>
 
 	<script src="popup.js"></script>
 </body>

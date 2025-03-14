@@ -15,7 +15,7 @@ const createHeaderUI = ({
 	disabled = false
 } = {}) => {
 	return `
-		<div data-header-group>
+		<div class="profile__header" data-header-group>
 			<label>
 				Header name
 				<input name="name" autocomplete="off" data-header-name value="${name}"/>
@@ -29,8 +29,8 @@ const createHeaderUI = ({
 			<div class="header__error" data-profile-header-error></div>
 
 			<label>
-				Disable header
 				<input type="checkbox" ${disabled ? 'checked' : ''} data-profile-disable-header />
+				Disable header
 			</label>
 		</div>
 	`;
