@@ -1,9 +1,10 @@
 
 chrome.storage.onChanged.addListener((event) => {
 		chrome.storage.sync.get().then(cache => {
-			const profiles = Object.values(cache);
+			const profiles = Object.values(cache).filter(profile => profile.id);
+			const { activeProfile } = cache;
 
-			updateProfilePicker(profiles);
+			updateProfilePicker(profiles, activeProfile);
 		})
 	}
 );
@@ -44,13 +45,13 @@ const updateActiveProfileMeta = ({
 	document.querySelector('[data-profile-name]').value = name;
 };
 
-const updateProfilePicker = (profiles = []) => {
+const updateProfilePicker = (profiles = [], activeProfile) => {
 	const picker = document.querySelector('[data-profile-picker]');
 
 	picker.innerHTML = '';
 
 	const optionsHtml = profiles.map(profile => {
-		const selected = profile.active ? 'selected' : '';
+		const selected = profile.id === activeProfile ? 'selected' : '';
 		return `<option value="${profile.id}" ${selected}>${profile.name}</option>`;
 	}).join('');
 
@@ -115,6 +116,9 @@ const saveProfile = ({
 
 	chrome.storage.sync.set(cache);
 
+	const activeProfile = profileId;
+	chrome.storage.sync.set({ activeProfile });
+
 	updateProfilePicker()
 
 	// Notify background service worker
@@ -142,25 +146,26 @@ document.addEventListener('DOMContentLoaded', function() {
 	 */
 
 	chrome.storage.sync.get().then(cache => {
-		const profiles = Object.values(cache);
+		const profiles = Object.values(cache).filter(profile => profile.id);
+		const { activeProfile } = cache;
 
 		/**
 		 * Build Profile UI
 		 */
 
-		if (!profiles.length) {
+		if (!activeProfile) {
 			updateActiveProfileMeta({});
 			updateProfilePicker([]);
 		} else {
-			const profileName = profiles[0].name || '';
-			const profileId = profiles[0].id;
+			const profileName = cache[activeProfile].name;
+			const profileId = cache[activeProfile].id;
 
 			updateActiveProfileMeta({
 				id: profileId,
 				name: profileName
 			});
 
-			updateProfilePicker(profiles);
+			updateProfilePicker(profiles, activeProfile);
 		}
 
 
@@ -171,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		if (!profiles || !profiles[0]?.headers?.length) {
 			headersSection.insertAdjacentHTML('beforeend', createHeaderUI());
 		} else {
-			const existingHeaderUI = profiles[0].headers.map(headerObject => {
+			const existingHeaderUI = cache[activeProfile].headers.map(headerObject => {
 				return createHeaderUI({
 					name: headerObject.header,
 					value: headerObject.value,
@@ -216,6 +221,10 @@ document.addEventListener('DOMContentLoaded', function() {
 	profilePicker.addEventListener('change', (event) => {
 
 		const newActiveId = event.target.value;
+
+		chrome.storage.sync.set({ activeProfile: newActiveId});
+
+		chrome.runtime.sendMessage({action: "profileUpdate"});
 
 		chrome.storage.sync.get(newActiveId).then(cache => {
 			const profile = cache[newActiveId];

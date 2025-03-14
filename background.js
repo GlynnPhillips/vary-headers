@@ -4,9 +4,9 @@ chrome.runtime.onMessage.addListener(
 	function(request) {
 		if (request.action === "profileUpdate") {
 			chrome.storage.sync.get().then(cache => {
-				const profiles = Object.values(cache);
+				const { activeProfile } = cache;
 
-				const headers = profiles[0].headers.map(headerObject => {
+				const headers = cache[activeProfile].headers.map(headerObject => {
 
 					try {
 						/**
