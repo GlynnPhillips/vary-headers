@@ -120,9 +120,6 @@ const saveProfile = ({
 	chrome.storage.sync.set({ activeProfile });
 
 	updateProfilePicker()
-
-	// Notify background service worker
-	chrome.runtime.sendMessage({action: "profileUpdate"});
 }
 
 
@@ -223,8 +220,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		const newActiveId = event.target.value;
 
 		chrome.storage.sync.set({ activeProfile: newActiveId});
-
-		chrome.runtime.sendMessage({action: "profileUpdate"});
 
 		chrome.storage.sync.get(newActiveId).then(cache => {
 			const profile = cache[newActiveId];

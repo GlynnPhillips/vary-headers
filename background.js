@@ -1,61 +1,57 @@
 const allResourceTypes = Object.values(chrome.declarativeNetRequest.ResourceType);
 
-chrome.runtime.onMessage.addListener(
-	function(request) {
-		if (request.action === "profileUpdate") {
-			chrome.storage.sync.get().then(cache => {
-				const { activeProfile } = cache;
+chrome.storage.onChanged.addListener(() => {
+	chrome.storage.sync.get().then(cache => {
+		const { activeProfile } = cache;
 
-				const headers = cache[activeProfile].headers.map(headerObject => {
+		const headers = cache[activeProfile].headers.map(headerObject => {
 
-					try {
-						/**
-						 * Check if header name and values are valid
-						 */
+			try {
+				/**
+				 * Check if header name and values are valid
+				 */
 
-						new Headers([
-							[headerObject.header, headerObject.value]
-						]);
-					} catch (error) {
-						/**
-						 * Remove headers that are invalid
-						 */
-						console.log(`The "${headerObject.header}" header has been filtered from the request because it is invalid: ${error}`);
-						return null;
-					}
+				new Headers([
+					[headerObject.header, headerObject.value]
+				]);
+			} catch (error) {
+				/**
+				 * Remove headers that are invalid
+				 */
+				console.log(`The "${headerObject.header}" header has been filtered from the request because it is invalid: ${error}`);
+				return null;
+			}
 
-					return {
-						header: !headerObject.disabled ? headerObject.header : '',
-						value: !headerObject.disabled ? headerObject.value : '',
-						operation: chrome.declarativeNetRequest.HeaderOperation.SET
-					}
+			return {
+				header: !headerObject.disabled ? headerObject.header : '',
+				value: !headerObject.disabled ? headerObject.value : '',
+				operation: chrome.declarativeNetRequest.HeaderOperation.SET
+			}
 
-				}).filter(headerObject => {
-					return headerObject && headerObject.header !== "" && headerObject.value !== ""
-				});
+		}).filter(headerObject => {
+			return headerObject && headerObject.header !== "" && headerObject.value !== ""
+		});
 
-				chrome.declarativeNetRequest.updateDynamicRules({
-					removeRuleIds: [1] // Remove existing rules each time we update the rules
-				});
+		chrome.declarativeNetRequest.updateDynamicRules({
+			removeRuleIds: [1] // Remove existing rules each time we update the rules
+		});
 
-				if (headers.length) {
-					chrome.declarativeNetRequest.updateDynamicRules({
-						addRules: [
-							{
-								id: 1,
-								priority: 1,
-								action: {
-									type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
-									requestHeaders: headers,
-								},
-								condition: {
-									resourceTypes: allResourceTypes,
-								},
-							},
-						]
-					});
-				}
+		if (headers.length) {
+			chrome.declarativeNetRequest.updateDynamicRules({
+				addRules: [
+					{
+						id: 1,
+						priority: 1,
+						action: {
+							type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+							requestHeaders: headers,
+						},
+						condition: {
+							resourceTypes: allResourceTypes,
+						},
+					},
+				]
 			});
 		}
-	}
-);
+	});
+});
