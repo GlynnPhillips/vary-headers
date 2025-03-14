@@ -1,6 +1,6 @@
 
 chrome.storage.onChanged.addListener((event) => {
-		chrome.storage.sync.get().then(cache => {
+		chrome.storage.local.get().then(cache => {
 			const profiles = Object.values(cache).filter(profile => profile.id);
 			const { activeProfile } = cache;
 
@@ -114,10 +114,10 @@ const saveProfile = ({
 
 	cache[profileId] = profile
 
-	chrome.storage.sync.set(cache);
+	chrome.storage.local.set(cache);
 
 	const activeProfile = profileId;
-	chrome.storage.sync.set({ activeProfile });
+	chrome.storage.local.set({ activeProfile });
 
 	updateProfilePicker()
 }
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	 * Load existing headers from storage
 	 */
 
-	chrome.storage.sync.get().then(cache => {
+	chrome.storage.local.get().then(cache => {
 		const profiles = Object.values(cache).filter(profile => profile.id);
 		const { activeProfile } = cache;
 
@@ -219,9 +219,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		const newActiveId = event.target.value;
 
-		chrome.storage.sync.set({ activeProfile: newActiveId});
+		chrome.storage.local.set({ activeProfile: newActiveId});
 
-		chrome.storage.sync.get(newActiveId).then(cache => {
+		chrome.storage.local.get(newActiveId).then(cache => {
 			const profile = cache[newActiveId];
 
 			updateActiveProfileMeta({

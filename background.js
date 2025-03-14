@@ -1,7 +1,7 @@
 const allResourceTypes = Object.values(chrome.declarativeNetRequest.ResourceType);
 
 chrome.storage.onChanged.addListener(() => {
-	chrome.storage.sync.get().then(cache => {
+	chrome.storage.local.get().then(cache => {
 		const { activeProfile } = cache;
 
 		const headers = cache[activeProfile].headers.map(headerObject => {
