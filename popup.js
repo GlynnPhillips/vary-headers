@@ -15,12 +15,12 @@ const uiHelpers = {
 			<div class="profile__header" data-header-group>
 				<label>
 					Header name
-					<input name="name" autocomplete="off" data-header-name value="${name}"/>
+					<input name="name" autocomplete="off" data-header-name value="${name}" ${disabled ? 'disabled' : ''}/>
 				</label>
 
 				<label>
 					Header value
-					<input name="value" autocomplete="off" data-header-value value="${value}"/>
+					<input name="value" autocomplete="off" data-header-value value="${value}" ${disabled ? 'disabled' : ''}/>
 				</label>
 
 				<div class="header__error" data-profile-header-error></div>
