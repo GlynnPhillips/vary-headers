@@ -1,3 +1,10 @@
+chrome.storage.onChanged.addListener((event) => {
+	const profileSection = document.querySelector('[data-profile]');
+	const headersSection = profileSection.querySelector('[data-profiles-headers]');
+
+	refreshUI(headersSection);
+});
+
 const uiHelpers = {
 		createHeaderUI: ({
 		name = '',
@@ -157,14 +164,6 @@ const refreshUI = (headersSection, newProfile = false) => {
 	});
 }
 
-chrome.storage.onChanged.addListener((event) => {
-	const profileSection = document.querySelector('[data-profile]');
-	const headersSection = profileSection.querySelector('[data-profiles-headers]');
-
-	refreshUI(headersSection);
-});
-
-
 document.addEventListener('DOMContentLoaded', function() {
 	const profileSection = document.querySelector('[data-profile]');
 	const headersSection = profileSection.querySelector('[data-profiles-headers]');
@@ -182,15 +181,12 @@ document.addEventListener('DOMContentLoaded', function() {
 	});
 
 	/**
-	 * Save changed to headers and profile name
+	 * Save the profile when the name or headers are changed
 	 */
-	let timeoutId;
-	profileSection.onkeyup = function() {
-		clearTimeout(timeoutId);
-		timeoutId = setTimeout(function() {
-			storage.saveProfile(profileSection);
-		}, 500);
-	};
+
+	profileSection.addEventListener('change', (event) => {
+		storage.saveProfile(profileSection);
+	});
 
 	/**
 	 * Add new header
