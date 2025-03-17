@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "FT Headers",
 	"version": "2.0",
-	"description": "Allows you to send request headers to FT services without sending them to other websites",
+	"description": "Like ModHeaders but for FT systems only. It allows you to add HTTP request headers to your requests and ensure those headers are only sent to FT services and nothing else",
 	"permissions": [
 		"activeTab",
 		"storage",
