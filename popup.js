@@ -9,7 +9,8 @@ const uiHelpers = {
 		createHeaderUI: ({
 		name = '',
 		value = '',
-		disabled = false
+		disabled = false,
+		validationError = ''
 	} = {}) => {
 		return `
 			<div class="profile__header" data-header-group>
@@ -23,7 +24,7 @@ const uiHelpers = {
 					<input name="value" autocomplete="off" data-header-value value="${value}" ${disabled ? 'disabled' : ''}/>
 				</label>
 
-				<div class="header__error" data-profile-header-error></div>
+				<div class="header__error" data-profile-header-error>${validationError}</div>
 
 				<label>
 					<input type="checkbox" ${disabled ? 'checked' : ''} data-profile-disable-header />
@@ -81,28 +82,6 @@ const storage = {
 				const disabledElement = groupElement.querySelector('[data-profile-disable-header]');
 				const errorElement = groupElement.querySelector('[data-profile-header-error]');
 
-				/**
-				 * Clean up the error message before the next validation
-				 */
-				errorElement.innerHTML = '';
-
-				if (nameElement.value !== '') {
-					/**
-					 * Don't try and validate headers whilst the name value is still blank
-					 */
-					try {
-						/**
-						 * Check if values submitted are valid header characters
-						 */
-
-						new Headers([
-							[nameElement.value, valueElement.value]
-						]);
-					} catch (error) {
-						errorElement.insertAdjacentHTML('afterBegin', `<p>This header is invalid and it wont sent with requests until it is corrected: ${error}</p>`);
-					}
-				}
-
 				return {
 					header: nameElement.value,
 					value: valueElement.value,
@@ -142,10 +121,32 @@ const refreshUI = (headersSection, newProfile = false) => {
 
 		const headerUI = !newProfile && activeProfile?.headers?.length ?
 			activeProfile.headers.map(headerObject => {
+				let validationError = '';
+
+				if (headerObject.header !== '') {
+					/**
+					 * Don't try and validate headers whilst the name value is still blank
+					 */
+
+					try {
+						/**
+						 * Check if values submitted are valid header characters
+						 */
+
+						new Headers([
+							[headerObject.header, headerObject.value]
+						]);
+
+					} catch (error) {
+						validationError = `<p>This header is invalid and it wont sent with requests until it is corrected: ${error}</p>`;
+					}
+				}
+
 				return uiHelpers.createHeaderUI({
 					name: headerObject.header,
 					value: headerObject.value,
-					disabled: headerObject.disabled
+					disabled: headerObject.disabled,
+					validationError
 				});
 			}).join('') : uiHelpers.createHeaderUI([]);
 
